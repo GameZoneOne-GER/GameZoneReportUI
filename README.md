@@ -2,6 +2,14 @@
 
 An in-game player report system for Rust (Oxide/uMod) with a full CUI form, Discord webhook integration, and an optional environment snapshot.
 
+## Screenshots
+
+> Replace with actual screenshots — upload to `screenshots/` in the repo and update the paths below.
+
+| Report form | Discord embed |
+|---|---|
+| ![Report form](https://placehold.co/480x270/0d1117/4d9375?text=Report+Form) | ![Discord embed](https://placehold.co/480x270/0d1117/4d9375?text=Discord+Embed) |
+
 ## Features
 
 - **CUI Form** — clean in-game UI with category dropdown, player selector, evidence links and description field
