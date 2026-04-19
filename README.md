@@ -14,9 +14,9 @@ An in-game player report system for Rust (Oxide/uMod) with a full CUI form, Disc
 
 ## Installation
 
-1. Copy `GameZoneReportUI.cs` into your `oxide/plugins/` folder
+1. Copy `PlayerReportUI.cs` into your `oxide/plugins/` folder
 2. Oxide will compile and load the plugin automatically
-3. Edit `oxide/config/GameZoneReportUI.json` and set your Discord Webhook URL
+3. Edit `oxide/config/PlayerReportUI.json` and set your Discord Webhook URL
 
 ## Configuration
 

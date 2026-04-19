@@ -12,18 +12,18 @@ using UnityEngine;
 
 namespace Oxide.Plugins
 {
-    [Info("GameZoneReportUI", "GameZoneOne", "1.4.0")]
-    [Description("In-game player reports with CUI, environment snapshot, Discord webhook and optional collector.")]
-    public class GameZoneReportUI : RustPlugin
+    [Info("Player Report UI", "gamezoneone", "1.4.0")]
+    [Description("In-game player reports with CUI form, environment snapshot, Discord webhook and optional collector.")]
+    public class PlayerReportUI : RustPlugin
     {
-        private const string UiRoot = "GZReportUI.Root";
-        private const string UiDropdown = "GZReportUI.Dropdown";
-        private const string UiShotUrlsBorder = "GZReportUI.ShotUrlsBorder";
-        private const string UiShotUrlsFill = "GZReportUI.ShotUrlsFill";
-        private const string UiDetailsBorder = "GZReportUI.DetailsBorder";
-        private const string UiDetailsFill = "GZReportUI.DetailsFill";
-        private const string PermUse = "gamezonereportui.use";
-        private const string PermAdmin = "gamezonereportui.admin";
+        private const string UiRoot = "PlayerRptUI.Root";
+        private const string UiDropdown = "PlayerRptUI.Dropdown";
+        private const string UiShotUrlsBorder = "PlayerRptUI.ShotUrlsBorder";
+        private const string UiShotUrlsFill = "PlayerRptUI.ShotUrlsFill";
+        private const string UiDetailsBorder = "PlayerRptUI.DetailsBorder";
+        private const string UiDetailsFill = "PlayerRptUI.DetailsFill";
+        private const string PermUse = "playerreportui.use";
+        private const string PermAdmin = "playerreportui.admin";
 
         private const string InputBorderColor = "0.32 0.55 0.82 0.92";
         private const string InputFillColor = "0.07 0.08 0.11 1";
@@ -34,7 +34,7 @@ namespace Oxide.Plugins
         private readonly Dictionary<ulong, double> _cooldownUntil = new Dictionary<ulong, double>();
 
         private ReportHistoryFile _reportHistory;
-        private const string HistoryDataPath = "GameZoneReportUI/report_history";
+        private const string HistoryDataPath = "PlayerReportUI/report_history";
 
         private sealed class ReportDraft
         {
@@ -212,23 +212,23 @@ namespace Oxide.Plugins
             lang.RegisterMessages(new Dictionary<string, string>
             {
                 // UI
-                ["UI.Title"]              = "Report Player",
-                ["UI.CategoryLabel"]      = "Report Reason",
+                ["UI.Title"]               = "Report Player",
+                ["UI.CategoryLabel"]       = "Report Reason",
                 ["UI.CategoryPlaceholder"] = "— select —",
-                ["UI.TargetRequired"]     = "Reported Player (required)",
-                ["UI.TargetOptional"]     = "Reported Player (optional)",
-                ["UI.ClearSelection"]     = "Clear Selection",
-                ["UI.Page"]               = "Page {0}/{1}",
-                ["UI.EvidenceLabel"]      = "Evidence: Image/Video Links (optional)",
-                ["UI.EvidenceHint"]       = "Note: The server cannot take screenshots. Upload them to Discord and paste the links here.",
-                ["UI.DescriptionLabel"]   = "Description (min. {0} chars)",
-                ["UI.SnapshotHint"]       = "On submit, a surrounding snapshot (~{0} m) with players, inventory and vehicles will be captured.",
-                ["UI.Submit"]             = "Submit",
-                ["UI.DropdownTitle"]      = "Select Reason",
+                ["UI.TargetRequired"]      = "Reported Player (required)",
+                ["UI.TargetOptional"]      = "Reported Player (optional)",
+                ["UI.ClearSelection"]      = "Clear Selection",
+                ["UI.Page"]                = "Page {0}/{1}",
+                ["UI.EvidenceLabel"]       = "Evidence: Image/Video Links (optional)",
+                ["UI.EvidenceHint"]        = "Note: The server cannot take screenshots. Upload them to Discord and paste the links here.",
+                ["UI.DescriptionLabel"]    = "Description (min. {0} chars)",
+                ["UI.SnapshotHint"]        = "On submit, a surrounding snapshot (~{0} m) with players, inventory and vehicles will be captured.",
+                ["UI.Submit"]              = "Submit",
+                ["UI.DropdownTitle"]       = "Select Reason",
                 // Chat
                 ["Chat.NoPermission"]        = "<color=#ff6b6b>No permission for /{0}.</color>",
                 ["Chat.UseWithoutArgs"]      = "<color=#aaaaaa>Use /{0} without text — the form opens in the UI.</color>",
-                ["Chat.NoDestination"]       = "<color=#ff6b6b>Report system: Neither webhook nor collector configured (see GameZoneReportUI.json).</color>",
+                ["Chat.NoDestination"]       = "<color=#ff6b6b>Report system: Neither webhook nor collector configured (see PlayerReportUI.json).</color>",
                 ["Chat.Cooldown"]            = "<color=#ff6b6b>Cooldown: ~{0} seconds remaining.</color>",
                 ["Chat.SelectCategory"]      = "<color=#ff6b6b>Please select a report reason.</color>",
                 ["Chat.SelectTarget"]        = "<color=#ff6b6b>Please select a reported player.</color>",
@@ -238,7 +238,7 @@ namespace Oxide.Plugins
                 ["Chat.AdminHeader"]         = "<color=#7bed9f>Latest reports (max. {0}):</color>",
                 ["Chat.AdminEntry"]          = "<color=#aaaaaa>   Affected:</color> {0} — {1}",
                 ["Chat.AdminDisabled"]       = "<color=#ff6b6b>Report admin list is disabled (config).</color>",
-                ["Chat.AdminNoPermission"]   = "<color=#ff6b6b>No permission (gamezonereportui.admin or admin).</color>",
+                ["Chat.AdminNoPermission"]   = "<color=#ff6b6b>No permission (playerreportui.admin or admin).</color>",
                 // Discord embed
                 ["Discord.EmbedTitle"]       = "New In-Game Report",
                 ["Discord.TraceField"]       = "Trace / File",
@@ -250,8 +250,8 @@ namespace Oxide.Plugins
                 ["Discord.EvidenceField"]    = "Evidence Links",
                 ["Discord.DescriptionField"] = "Description",
                 // Snapshot
-                ["Snapshot.Summary"]         = "Players in radius: {0}, vehicles/mounts: {1}",
-                ["Snapshot.Error"]           = "Error: {0}",
+                ["Snapshot.Summary"] = "Players in radius: {0}, vehicles/mounts: {1}",
+                ["Snapshot.Error"]   = "Error: {0}",
             }, this);
         }
 
@@ -307,12 +307,12 @@ namespace Oxide.Plugins
                 if (!permission.GroupExists(defaultGroup))
                 {
                     PrintWarning(
-                        $"GameZoneReportUI: Oxide group '{defaultGroup}' not found — players may lack {PermUse}. Create it or grant the permission manually.");
+                        $"Player Report UI: Oxide group '{defaultGroup}' not found — players may lack {PermUse}. Create it or grant the permission manually.");
                 }
                 else if (!permission.GroupHasPermission(defaultGroup, PermUse))
                 {
                     permission.GrantGroupPermission(defaultGroup, PermUse, this);
-                    Puts($"GameZoneReportUI: Granted {PermUse} to group '{defaultGroup}' (players can use /{_config.OpenCommand ?? "report"}).");
+                    Puts($"Player Report UI: Granted {PermUse} to group '{defaultGroup}' (players can use /{_config.OpenCommand ?? "report"}).");
                 }
             }
 
@@ -321,7 +321,7 @@ namespace Oxide.Plugins
             if (!hasDiscord && !hasCollector)
             {
                 PrintWarning(
-                    "GameZoneReportUI: Neither Discord Webhook nor Collector URL configured — reports cannot be delivered. Edit GameZoneReportUI.json.");
+                    "Player Report UI: Neither Discord Webhook nor Collector URL configured — reports cannot be delivered. Edit PlayerReportUI.json.");
             }
 
             LoadReportHistory();
@@ -423,13 +423,15 @@ namespace Oxide.Plugins
             }, UiRoot);
 
             // Target player
-            var targetLabel = _config.RequireTargetPlayer
-                ? T("UI.TargetRequired", uid)
-                : T("UI.TargetOptional", uid);
-
             c.Add(new CuiLabel
             {
-                Text = { Text = targetLabel, FontSize = 14, Align = TextAnchor.MiddleLeft, Color = "0.75 0.78 0.9 1" },
+                Text =
+                {
+                    Text = _config.RequireTargetPlayer ? T("UI.TargetRequired", uid) : T("UI.TargetOptional", uid),
+                    FontSize = 14,
+                    Align = TextAnchor.MiddleLeft,
+                    Color = "0.75 0.78 0.9 1"
+                },
                 RectTransform = { AnchorMin = "0.03 0.745", AnchorMax = "0.55 0.8" }
             }, UiRoot);
 
@@ -440,20 +442,26 @@ namespace Oxide.Plugins
                 Text = { Text = T("UI.ClearSelection", uid), FontSize = 12, Align = TextAnchor.MiddleCenter, Color = "1 1 1 1" }
             }, UiRoot);
 
-            var online = BasePlayer.activePlayerList
-                .Where(p => p != null && p.userID != player.userID)
-                .OrderBy(p => p.displayName)
-                .ToList();
+            // Player list
+            var online = new List<BasePlayer>(BasePlayer.activePlayerList.Count);
+            foreach (var p in BasePlayer.activePlayerList)
+            {
+                if (p != null && p.userID != player.userID)
+                    online.Add(p);
+            }
+            online.Sort((a, b) => string.Compare(a.displayName, b.displayName, StringComparison.OrdinalIgnoreCase));
 
             int perPage = _config.PlayersPerPage;
             int pages = Mathf.Max(1, Mathf.CeilToInt(online.Count / (float)perPage));
             if (draft.PlayerPage >= pages) draft.PlayerPage = pages - 1;
             if (draft.PlayerPage < 0) draft.PlayerPage = 0;
 
-            var slice = online.Skip(draft.PlayerPage * perPage).Take(perPage).ToList();
+            int start = draft.PlayerPage * perPage;
+            int end = Mathf.Min(start + perPage, online.Count);
             float py = 0.68f;
-            foreach (var other in slice)
+            for (int i = start; i < end; i++)
             {
+                var other = online[i];
                 bool pick = draft.TargetSteamId == other.userID;
                 c.Add(new CuiButton
                 {
@@ -719,7 +727,12 @@ namespace Oxide.Plugins
             if (player == null || arg.Args == null || arg.Args.Length < 1 || !CanUse(player)) return;
             if (!ulong.TryParse(arg.Args[0], out var sid)) return;
 
-            var target = BasePlayer.activePlayerList.FirstOrDefault(p => p != null && p.userID == sid);
+            BasePlayer target = null;
+            foreach (var p in BasePlayer.activePlayerList)
+            {
+                if (p != null && p.userID == sid) { target = p; break; }
+            }
+
             if (!_drafts.TryGetValue(player.userID, out var d))
                 _drafts[player.userID] = d = new ReportDraft();
             d.TargetSteamId = sid;
@@ -1080,7 +1093,7 @@ namespace Oxide.Plugins
         {
             try
             {
-                Interface.Oxide.DataFileSystem.WriteObject($"GameZoneReportUI/snapshots/{traceId}", snapshot);
+                Interface.Oxide.DataFileSystem.WriteObject($"PlayerReportUI/snapshots/{traceId}", snapshot);
             }
             catch (Exception ex)
             {
@@ -1138,13 +1151,13 @@ namespace Oxide.Plugins
 
             var fields = new List<DiscordField>
             {
-                new DiscordField { Name = T("Discord.TraceField"),    Value = "`" + traceId + "`", Inline = false },
-                new DiscordField { Name = T("Discord.ServerField"),   Value = serverLabel, Inline = true },
-                new DiscordField { Name = T("Discord.ReporterField"), Value = reporter.displayName + " (`" + reporter.UserIDString + "`)", Inline = true },
-                new DiscordField { Name = T("Discord.ReasonField"),   Value = d.Category, Inline = true },
-                new DiscordField { Name = T("Discord.AffectedField"), Value = targetLine, Inline = false },
-                new DiscordField { Name = T("Discord.SnapshotField"), Value = snapLine, Inline = false },
-                new DiscordField { Name = T("Discord.EvidenceField"), Value = urlsShort, Inline = false },
+                new DiscordField { Name = T("Discord.TraceField"),       Value = "`" + traceId + "`", Inline = false },
+                new DiscordField { Name = T("Discord.ServerField"),      Value = serverLabel, Inline = true },
+                new DiscordField { Name = T("Discord.ReporterField"),    Value = reporter.displayName + " (`" + reporter.UserIDString + "`)", Inline = true },
+                new DiscordField { Name = T("Discord.ReasonField"),      Value = d.Category, Inline = true },
+                new DiscordField { Name = T("Discord.AffectedField"),    Value = targetLine, Inline = false },
+                new DiscordField { Name = T("Discord.SnapshotField"),    Value = snapLine, Inline = false },
+                new DiscordField { Name = T("Discord.EvidenceField"),    Value = urlsShort, Inline = false },
                 new DiscordField { Name = T("Discord.DescriptionField"), Value = truncated, Inline = false }
             };
 
@@ -1160,7 +1173,7 @@ namespace Oxide.Plugins
             {
                 embed.Footer = new DiscordEmbedFooter
                 {
-                    Text = "Snapshot: oxide/data/GameZoneReportUI/snapshots/" + traceId + ".json"
+                    Text = "Snapshot: oxide/data/PlayerReportUI/snapshots/" + traceId + ".json"
                 };
             }
 
@@ -1196,7 +1209,7 @@ namespace Oxide.Plugins
                 ["traceId"] = traceId,
                 ["screenshotUrls"] = shotUrls ?? string.Empty,
                 ["snapshot"] = snapshot,
-                ["uiVersion"] = "GameZoneReportUI/1.4.0"
+                ["uiVersion"] = "PlayerReportUI/1.4.0"
             };
 
             var actor = new EventActorDto
