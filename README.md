@@ -8,7 +8,7 @@ An in-game player report system for Rust (Oxide/uMod) with a full CUI form, Disc
 
 | Report form | Discord embed |
 |---|---|
-| ![Report form](https://pic.gamezoneone.de/api/media/lxbsb6sw.png) | ![Discord embed](https://placehold.co/480x270/0d1117/4d9375?text=Discord+Embed) |
+| ![Report form](https://pic.gamezoneone.de/api/media/r1w711mu.png) | ![Discord embed](https://pic.gamezoneone.de/api/media/lxbsb6sw.png) |
 
 ## Features
 
