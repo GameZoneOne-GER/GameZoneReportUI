@@ -2,13 +2,7 @@
 
 An in-game player report system for Rust (Oxide/uMod) with a full CUI form, Discord webhook integration, and an optional environment snapshot.
 
-## Screenshots
-
-| Report form | Discord embed |
-|---|---|
-| ![Report form](https://pic.gamezoneone.de/api/media/r1w711mu.png) | ![Discord embed](https://pic.gamezoneone.de/api/media/lxbsb6sw.png) |
-
-## Features
+# Features
 
 - **CUI Form** — clean in-game UI with category dropdown, player selector, evidence links and description field
 - **Discord Webhook** — reports are posted as rich embeds to your Discord channel
@@ -24,10 +18,8 @@ An in-game player report system for Rust (Oxide/uMod) with a full CUI form, Disc
 2. Oxide will compile and load the plugin automatically
 3. Edit `oxide/config/PlayerReportUI.json` and set your Discord Webhook URL
 
-## Configuration
+# Configuration
 
-| Key | Default | Description |
-|-----|---------|-------------|
 | `Open Command` | `report` | Chat command to open the report form |
 | `Discord Webhook URL` | *(empty)* | Webhook URL — leave empty to disable Discord |
 | `Optional: Collector URL` | *(empty)* | HTTP endpoint for custom report forwarding |
@@ -50,24 +42,18 @@ An in-game player report system for Rust (Oxide/uMod) with a full CUI form, Disc
 | `Admin: Max History Entries` | `40` | Maximum entries kept in report history |
 | `History In-Memory Only` | `false` | Keep history in RAM only (no oxide/data file) |
 
-## Permissions
+# Permissions
 
-| Permission | Description |
-|-----------|-------------|
 | `gamezonereportui.use` | Open the report form (`/report`) |
 | `gamezonereportui.admin` | View report history (`/reportadmin`) |
 
-## Commands
+# Commands
 
-| Command | Description |
-|---------|-------------|
 | `/report` | Open the in-game report form |
 | `/reportadmin [n]` | Show the last *n* reports (default 15, requires `gamezonereportui.admin` or admin) |
 
-## Localization
+# Localization
 
 All player-facing strings are in the Oxide lang system. Edit `oxide/lang/en/GameZoneReportUI.json` to customize text or add additional languages.
 
-## License
-
-MIT — see [LICENSE](LICENSE)
+https://github.com/GameZoneOne-GER/GameZoneReportUI
